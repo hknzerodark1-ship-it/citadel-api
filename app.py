@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
 import os
-import json
 import uuid
 import time
 from flask import Flask, request, jsonify
@@ -18,18 +16,18 @@ VALID_KEYS = {
 def health():
     return jsonify({
         "status": "healthy",
-        "version": "render-v1",
+        "version": "v1",
         "timestamp": time.time()
-    }), 200
+    })
 
 @app.route('/v1/infer', methods=['POST'])
 def infer():
-    auth_header = request.headers.get('Authorization', '')
-    if not auth_header.startswith('Bearer '):
+    auth = request.headers.get('Authorization', '')
+    if not auth.startswith('Bearer '):
         return jsonify({"error": "Missing Authorization header"}), 401
     
-    api_key = auth_header[7:]
-    if api_key not in VALID_KEYS:
+    key = auth[7:]
+    if key not in VALID_KEYS:
         return jsonify({"error": "Invalid API key"}), 401
     
     if not request.is_json:
@@ -46,12 +44,9 @@ def infer():
     return jsonify({
         "request_id": str(uuid.uuid4()),
         "status": "success",
-        "tier": VALID_KEYS[api_key],
-        "inference": {
-            "mean": round(mean, 3),
-            "n_events": len(events)
-        }
-    }), 200
+        "tier": VALID_KEYS[key],
+        "result": {"mean": round(mean, 3), "count": len(events)}
+    })
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 8000))
