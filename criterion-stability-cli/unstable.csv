@@ -1,0 +1,10 @@
+benchmark,seed,value
+bench_a,0,100
+bench_a,1,80
+bench_a,2,90
+bench_b,0,95
+bench_b,1,85
+bench_b,2,105
+bench_c,0,88
+bench_c,1,92
+bench_c,2,78
